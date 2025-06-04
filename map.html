@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KMIT Campus Map2</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        #map {
+            height: 700px;
+            /* reduced height */
+            width: 100%;
+        }
+
+        #search {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            padding: 8px;
+            width: 250px;
+            font-size: 16px;
+        }
+    </style>
+    
+</head>
+
+<body>
+
+    <input type="text" id="search" placeholder="Search location (e.g., canteen)" />
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([17.3968, 78.4920], 18); // KMIT area coordinates
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20
+        }).addTo(map);
+
+        // Custom red icon
+        const redIcon = new L.Icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+
+        // Location markers with labels and optional images
+        const locations = {
+            "canteen": {
+                name: "KMIT Canteen",
+                coords: [17.3971, 78.49068],
+                image: "canteen.jpeg",
+                url: "https://poly.cam/capture/CEC9D1C9-28D8-4D1C-88DC-F357A4E47910"  // Updated URL
+            },
+            "library": {
+                name: "Library",
+                coords: [17.3975, 78.4903],
+                image: "library.jpg",
+                url: "https://poly.cam/capture/3433C939-43C9-4587-81CD-AABE407EEE8B"  // URL for redirection
+            },
+            "labs": {
+                name: "Computer Labs",
+                coords: [17.3971, 78.4899],
+                image: "labs.jpg",
+                url: "https://poly.cam/capture/09BA4325-A784-4488-A07B-702E40BF504B"  // URL for redirection
+            },
+            "basketball court": {
+                name: "Basket ball",
+                coords: [17.3971, 78.4902],
+                image: "basketball.jpg",
+                url: "https://poly.cam/capture/918C24C0-DCCC-4551-A6E3-1CB59F7585D0"  // URL for redirection
+            }
+
+        };
+
+        const markers = {};
+
+        // Add markers to map
+        for (let key in locations) {
+            const loc = locations[key];
+            const marker = L.marker(loc.coords, { icon: redIcon })
+                .addTo(map)
+                .bindPopup(`<b>${loc.name}</b><br><a href="${loc.url}" target="_blank"><img src="${loc.image}" width="150" style="cursor: pointer;" /></a>`);
+            markers[key] = marker;
+        }
+
+        // Highlight Keshav Memorial Institution of Technology with a blue circle marker
+        L.circleMarker([17.3978, 78.4892], {
+            radius: 10,
+            color: 'blue',
+            fillColor: 'blue',
+            fillOpacity: 0.5
+        }).addTo(map).bindPopup("Keshav Memorial Institution of Technology");
+
+        // Search feature
+        document.getElementById("search").addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+            if (markers[query]) {
+                map.setView(locations[query].coords, 20);
+                markers[query].openPopup();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

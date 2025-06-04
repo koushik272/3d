@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About KMIT</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e0f2fe, #fce7f3);
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        h1, h2 {
+            color: #2d3748;
+            font-weight: 700;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: #3182ce;
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            padding-bottom: 8px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #f6c107;
+            border-radius: 2px;
+        }
+
+        .section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.4s; }
+        .section:nth-child(3) { animation-delay: 0.6s; }
+        .section:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        p, li {
+            color: #4a5568;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        li::before {
+            content: '★';
+            color: #3182ce;
+            position: absolute;
+            left: 0;
+            font-size: 1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, #bee3f8, #fed7e2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .placement-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: #fefcbf;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-card h3 {
+            color: #2d3748;
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+
+        .stat-card p {
+            color: #718096;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>About Keshav Memorial Institute of Technology</h1>
+
+    <section class="section">
+        <h2>Vision</h2>
+        <p>KMIT aspires to be the fountainhead in producing highly skilled, globally competent engineers, striving to make India a world leader in software products and services. The institute is committed to achieving global excellence in teaching, research, consulting, and placements by fostering a conducive environment in the fields of computer sciences and information technology with a professional and global outlook. <span class="highlight">KMIT</span> emphasizes nurturing core values that drive continuous advancement and learner autonomy.</p>
+    </section>
+
+    <section class="section">
+        <h2>Mission</h2>
+        <ul>
+            <li>Create a faculty pool with a deep understanding and passion for algorithmic thought processes.</li>
+            <li>Impart skills beyond the university-prescribed curriculum to transform students into well-rounded computer science professionals.</li>
+            <li>Inculcate an ability in students to pursue lifelong learning in information technology using multimodal platforms, including e-learning and blended learning.</li>
+            <li>Encourage collaboration with reputed organizations for research, consultancy, and industrial interactions to provide real-world exposure.</li>
+            <li>Foster an entrepreneurial mindset through the Entrepreneur Development Cell, exposing students to diverse domains and modern business environments.</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Outcomes</h2>
+        <p>KMIT delivers exceptional educational outcomes, preparing students for success in the tech industry:</p>
+        <ul>
+            <li><span class="highlight">Industry-Ready Graduates</span>: Through initiatives like Trishul, Finishing School, UTTKARSH, TESSELLATOR, and SONET, students gain advanced technical skills and problem-solving abilities.</li>
+            <li><span class="highlight">Project-Driven Learning</span>: Focus on real-time projects in domains like Biomedical Informatics, Agri-Informatics, Defense Technology, and GSoC, ensuring practical experience.</li>
+            <li><span class="highlight">Global Recognition</span>: Students have excelled in events like the Smart India Hackathon 2024, with teams like Canon Crew and BinaryBrains0101 reaching the finals.</li>
+            <li><span class="highlight">Holistic Development</span>: Programs foster professional and ethical responsibilities, preparing students for global careers.</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Placements</h2>
+        <p>KMIT boasts an outstanding placement record, with a dedicated Training and Placement Cell that ensures students are well-prepared for industry roles:</p>
+        <div class="placement-stats">
+            <div class="stat-card">
+                <h3>100%</h3>
+                <p>Placement Rate (2023)</p>
+            </div>
+            <div class="stat-card">
+                <h3>INR 1.22 Cr</h3>
+                <p>Highest Package (Amazon Dublin)</p>
+            </div>
+            <div class="stat-card">
+                <h3>INR 9.74 LPA</h3>
+                <p>Average Package (2024-25)</p>
+            </div>
+            <div class="stat-card">
+                <h3>136</h3>
+                <p>Companies Visited (2024-25)</p>
+            </div>
+        </div>
+        <p>Top recruiters include <span class="highlight">Amazon, Google, Microsoft, Adobe, Salesforce, and TCS</span>. In 2024-25, 549 out of 570 registered students were placed, with 9 students securing offers above INR 40 LPA. The institute also facilitates internships, with 50-60% of students securing opportunities at companies like Adobe and Goldman Sachs, offering stipends up to INR 1 Lakh per month.</p>
+    </section>
+</body>
+</html>

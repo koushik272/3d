@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Virtual Campus Tour</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background: linear-gradient(to right, #e681ab, #fffc41);
+            color: #fff;
+        }
+    
+        header {
+            background: #ff5100;
+            color: #edebf3;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        header img {
+            height: 80px;
+            margin-bottom: 10px;
+        }
+    
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+    
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+    
+        nav ul li a {
+            color: #151a19;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            border-bottom: 1px solid #ccc;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 1000px;
+            color: #333;
+        }
+    
+        .tour-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+    
+        .tour-card {
+            width: 300px;
+            background-color: #f7cbcb;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .campus-image {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    
+        .tour-button {
+            background-color: #1e3c72;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+    
+        .tour-button:hover {
+            background-color: #16335e;
+        }
+    
+        .gallery {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+    
+        .gallery img {
+            width: 45%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    
+        footer {
+            background: #ebecef;
+            color: white;
+            padding: 10px;
+            margin-top: 100px;
+        }
+    
+        marquee {
+            background-color: #f1c40f;
+            color: #000;
+            font-weight: bold;
+            padding: 10px 0;
+        }
+    
+        .scroll-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 20px;
+        }
+    
+        .scroll-container img {
+            height: 200px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hand Gesture UI Styles */
+        #gesture-control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        #gesture-toggle {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #gesture-toggle:hover {
+            background: #16335e;
+        }
+
+        #webcam-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            height: 150px;
+            border: 3px solid #1e3c72;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        #webcam-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #gesture-cursor {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(30, 60, 114, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+        }
+
+        #gesture-instructions {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.style.display = (section.style.display === "none" || section.style.display === "") ? "block" : "none";
+        }
+
+        function openTour(url) {
+            window.open(url, "_blank");
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Hand Gesture Cursor -->
+    <div id="gesture-cursor"></div>
+
+    <!-- Webcam Container -->
+    <div id="webcam-container">
+        <video id="webcam-video" autoplay playsinline></video>
+    </div>
+
+    <!-- Gesture Control Panel -->
+    <div id="gesture-control-panel">
+        <button id="gesture-toggle">Enable Hand Gestures</button>
+        <div id="gesture-instructions">
+            <p>Instructions:</p>
+            <ul style="text-align: left; font-size: 12px;">
+                <li>Open hand to move cursor</li>
+                <li>Point finger to click</li>
+                <li>Thumbs up to scroll up</li>
+                <li>Thumbs down to scroll down</li>
+            </ul>
+        </div>
+    </div>
+
+    <header>
+        <img src="kmitlogo.jpeg" alt="KMIT Logo">
+        <h1>Welcome to KMIT 3D Virtual Campus Tour</h1>
+        <nav>
+            <ul>
+                <li><a href="./about">About</a></li>
+                <li><a href="#" onclick="toggleSection('tour')">Virtual Tour</a></li>
+                <li><a href="./map" onclick="toggleSection('map')">Map</a></li>
+                <li><a href="./contact" onclick="toggleSection('contact')">Feedback</a></li>
+            </ul>
+        </nav>
+    </header>
+    <marquee direction="left" id="mar">KMIT HAS ACHIEVED A GREAT PLACEMENT RATE IN RECENT PLACEMENTS 2023-2024. The highest package was 46LPA. KMIT IS NOW OFFICIALLY IN TOP 5 ENGINEERING COLLEGES IN TELANGANA.</marquee>
+    <div class="scroll-container" id="scroll-container">
+        <div class="image-track" id="image-track">
+            <img src="3d10.jpeg" alt="Image1">
+            <img src="3d1.jpeg" alt="Image2">
+            <img src="3d2.jpeg" alt="Image3">
+            <img src="3d3.jpeg" alt="Image4">
+            <img src="3d4.jpeg" alt="Image1">
+            <img src="3d5.jpeg" alt="Image2">
+            <img src="3d10.jpeg" alt="Image4">
+            <img src="3d7.jpeg" alt="Image5">
+            <img src="3d8.jpeg" alt="Image6">
+            <img src="3d9.jpeg" alt="Image6">
+            <img src="3d10.jpeg" alt="Image6">
+        </div>
+    </div>
+    
+    <section id="about">
+        <h2>About KMIT</h2>
+        <p>Keshav Memorial Institute of Technology (KMIT) is a premier private engineering college located in Narayanguda, Hyderabad, Telangana. Established in 2007, it is affiliated with Jawaharlal Nehru Technological University, Hyderabad (JNTUH) and approved by the All India Council for Technical Education (AICTE) </p>
+    </section>
+
+    <section id="tour">
+        <h2>Virtual Campus Tour</h2>
+        <div class="tour-container">
+            <div class="tour-card">
+                <img src="/basketball.jpg" alt="Basketball Court" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/918C24C0-DCCC-4551-A6E3-1CB59F7585D0')">Basketball Court</button>
+                <p>This is the basketball court of KMIT, the Timings for the basketball court is after the college hours i.e 4:30pm - 5:30pm</p>
+            </div>
+
+            <div class="tour-card">
+                <img src="/canteen.jpeg" alt="Canteen" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/CEC9D1C9-28D8-4D1C-88DC-F357A4E47910')">Canteen</button>
+                <p>The KMIT campus consists of 3 stalls. About 150 students can sit in the canteen & The Canteen Timings for 1st years are 12pm - 12:50pm, for 2nd & 3rd years it is from 1:05 to 1:55pm.From the main stall you can order the main course and also snacks and other 2 stalls is for the chat and juice centre.</p>
+            </div>
+
+            <div class="tour-card">
+                <img src="/campus.jpg" alt="KMIT Campus" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/CD1450E1-44D7-467E-B093-84BD0C925793')">KMIT Campus</button>
+                <p>The Campus timings for KMIT are 9:30am - 4:30pm. The campus consists of Basketball court, Canteen, classrooms, labs and library and the main ground is usually used for the vehicle parkings.</p>
+            </div>
+
+            <div class="tour-card">
+                <img src="download.jpeg" alt="Classroom" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/440AA2C0-611B-4053-BBC5-391F1F3696B3')">Classroom</button>
+                <p>There are about 30 classrooms in the main B-Block in KMIT. Where students learn the subject taught by the faculty.</p>
+            </div>
+
+            <div class="tour-card">
+                <img src="library.jpg" alt="Library" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/3433C939-43C9-4587-81CD-AABE407EEE8B')">Library</button>
+                <p>This is the Book world of KMIT i.e Library, where you can refer, work and study. To enter the library you need to fill your details and if you would like to take a book from library you need a pass for it. Timings for the library are 9:30 am - 4:30 (college hours).</p>
+            </div>
+
+            <div class="tour-card">
+                <img src="/labs.jpg" alt="Computer Lab" class="campus-image">
+                <br>
+                <button class="tour-button" onclick="openTour('https://poly.cam/capture/09BA4325-A784-4488-A07B-702E40BF504B')">Computer Lab</button>
+                <p>There are 3 Computer labs in the main campus block (B), About 50-60 students can work in one lab and the systems are easy and comfortable to use. You can use the computer labs according to you Lab timings.</p>
+            </div>
+        </div>
+    </section>
+    
+    <footer style="margin: top 100px;color: #000">
+        <p>&copy; 2025 KMIT. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Hand Gesture Navigation Implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            const gestureToggle = document.getElementById('gesture-toggle');
+            const webcamContainer = document.getElementById('webcam-container');
+            const webcamVideo = document.getElementById('webcam-video');
+            const gestureCursor = document.getElementById('gesture-cursor');
+            
+            let isGestureControlActive = false;
+            let handposeModel = null;
+            let lastClickTime = 0;
+            let lastScrollTime = 0;
+            let clickCooldown = 1000; // 1 second cooldown between clicks
+            let scrollCooldown = 500; // 0.5 second cooldown between scrolls
+            
+            // Toggle gesture control
+            gestureToggle.addEventListener('click', async function() {
+                isGestureControlActive = !isGestureControlActive;
+                
+                if (isGestureControlActive) {
+                    gestureToggle.textContent = 'Disable Hand Gestures';
+                    webcamContainer.style.display = 'block';
+                    gestureCursor.style.display = 'block';
+                    
+                    try {
+                        // Load handpose model
+                        handposeModel = await handpose.load();
+                        
+                        // Start webcam
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        webcamVideo.srcObject = stream;
+                        
+                        // Start hand detection loop
+                        detectHand();
+                    } catch (error) {
+                        console.error('Error enabling gesture control:', error);
+                        alert('Error enabling gesture control. Please ensure you have a webcam and have granted permissions.');
+                        disableGestureControl();
+                    }
+                } else {
+                    disableGestureControl();
+                }
+            });
+            
+            function disableGestureControl() {
+                isGestureControlActive = false;
+                gestureToggle.textContent = 'Enable Hand Gestures';
+                webcamContainer.style.display = 'none';
+                gestureCursor.style.display = 'none';
+                
+                // Stop webcam
+                if (webcamVideo.srcObject) {
+                    webcamVideo.srcObject.getTracks().forEach(track => track.stop());
+                    webcamVideo.srcObject = null;
+                }
+            }
+            
+            async function detectHand() {
+                if (!isGestureControlActive || !handposeModel) return;
+                
+                try {
+                    // Get hand predictions
+                    const predictions = await handposeModel.estimateHands(webcamVideo);
+                    
+                    if (predictions.length > 0) {
+                        const hand = predictions[0];
+                        const indexFingerTip = hand.annotations.indexFinger[3];
+                        const thumbTip = hand.annotations.thumb[3];
+                        const middleFingerTip = hand.annotations.middleFinger[3];
+                        
+                        // Calculate cursor position based on index finger
+                        const cursorX = (indexFingerTip[0] / webcamVideo.videoWidth) * window.innerWidth;
+                        const cursorY = (indexFingerTip[1] / webcamVideo.videoHeight) * window.innerHeight;
+                        
+                        // Update cursor position
+                        gestureCursor.style.left = `${cursorX - 15}px`;
+                        gestureCursor.style.top = `${cursorY - 15}px`;
+                        
+                        // Calculate distances between fingers to detect gestures
+                        const indexThumbDistance = calculateDistance(indexFingerTip, thumbTip);
+                        const indexMiddleDistance = calculateDistance(indexFingerTip, middleFingerTip);
+                        
+                        // Click detection (pointing gesture)
+                        if (indexThumbDistance > 50 && indexMiddleDistance > 50) {
+                            const now = Date.now();
+                            if (now - lastClickTime > clickCooldown) {
+                                lastClickTime = now;
+                                simulateClick(cursorX, cursorY);
+                            }
+                        }
+                        
+                        // Scroll detection (thumbs up/down)
+                        const thumbMiddleDistance = calculateDistance(thumbTip, middleFingerTip);
+                        if (indexThumbDistance < 30 && thumbMiddleDistance > 40) {
+                            const thumbDirection = thumbTip[1] < middleFingerTip[1] ? 'up' : 'down';
+                            const now = Date.now();
+                            if (now - lastScrollTime > scrollCooldown) {
+                                lastScrollTime = now;
+                                simulateScroll(thumbDirection);
+                            }
+                        }
+                    }
+                    
+                    // Continue detection loop
+                    requestAnimationFrame(detectHand);
+                } catch (error) {
+                    console.error('Error detecting hand:', error);
+                    setTimeout(detectHand, 100); // Try again after a short delay
+                }
+            }
+            
+            function calculateDistance(point1, point2) {
+                return Math.sqrt(
+                    Math.pow(point1[0] - point2[0], 2) + 
+                    Math.pow(point1[1] - point2[1], 2)
+                );
+            }
+            
+            function simulateClick(x, y) {
+                const element = document.elementFromPoint(x, y);
+                if (element) {
+                    // Create and dispatch mouse events
+                    const mouseDownEvent = new MouseEvent('mousedown', {
+                        bubbles: true,
+                        cancelable: true,
+                        clientX: x,
+                        clientY: y
+                    });
+                    
+                    const mouseUpEvent = new MouseEvent('mouseup', {
+                        bubbles: true,
+                        cancelable: true,
+                        clientX: x,
+                        clientY: y
+                    });
+                    
+                    const clickEvent = new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        clientX: x,
+                        clientY: y
+                    });
+                    
+                    element.dispatchEvent(mouseDownEvent);
+                    element.dispatchEvent(mouseUpEvent);
+                    element.dispatchEvent(clickEvent);
+                    
+                    // Visual feedback
+                    gestureCursor.style.transform = 'scale(0.7)';
+                    setTimeout(() => {
+                        gestureCursor.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }
+            
+            function simulateScroll(direction) {
+                const scrollAmount = direction === 'up' ? -200 : 200;
+                window.scrollBy({
+                    top: scrollAmount,
+                    behavior: 'smooth'
+                });
+                
+                // Visual feedback
+                gestureCursor.style.backgroundColor = direction === 'up' ? 'rgba(0, 255, 0, 0.7)' : 'rgba(255, 0, 0, 0.7)';
+                setTimeout(() => {
+                    gestureCursor.style.backgroundColor = 'rgba(30, 60, 114, 0.7)';
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

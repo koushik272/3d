@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: #3182ce;
+            border-radius: 2px;
+        }
+
+        .contact-info, .contact-form, .reviews-section {
+            margin: 2rem 0;
+            padding: 2rem;
+            background-color: rgb(179, 231, 233);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .contact-info:hover, .contact-form:hover, .reviews-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+        }
+
+        .contact-info div {
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 0;
+        }
+
+        .contact-info p {
+            margin: 0;
+            color: #718096;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #2d3748;
+            background-color: #f7fafc;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .star.selected, .star:hover, .star:hover ~ .star {
+            color: #f6c107;
+        }
+
+        button {
+            background-color: #3182ce;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #2b6cb0;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            color: #38a169;
+            font-weight: 500;
+            margin-top: 1rem;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .reviews-section {
+            margin-top: 3rem;
+        }
+
+        .review-card {
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            background-color: #fdfdfd;
+            animation: slideIn 0.5s ease-out;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .review-card:nth-child(1) { animation-delay: 0.1s; }
+        .review-card:nth-child(2) { animation-delay: 0.2s; }
+        .review-card:nth-child(3) { animation-delay: 0.3s; }
+        .review-card:nth-child(4) { animation-delay: 0.4s; }
+        .review-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .review-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .review-card .email {
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .review-card .rating {
+            color: #f6c107;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-card p {
+            margin: 0.5rem 0;
+            color: #4a5568;
+        }
+
+        .review-card small {
+            color: #a0aec0;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            .contact-info, .contact-form, .reviews-section {
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="contact-info">
+        <h2>Get in Touch</h2>
+        <div>
+            <h3>Address</h3>
+            <p>3-5-1026, Narayanguda, Hyderabad, Telangana 500029</p>
+        </div>
+        <div>
+            <h3>Phone</h3>
+            <p>+91 40 2756 0000</p>
+        </div>
+        <div>
+            <h3>Email</h3>
+            <p>contact@company.com</p>
+        </div>
+        <div>
+            <h3>Working Hours</h3>
+            <p>Monday - Saturday: 9:30 AM - 4:30 PM</p>
+        </div>
+    </section>
+
+    <section class="contact-form">
+        <h2>Send us a Message</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="star-rating" id="starRating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" id="rating" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" required></textarea>
+            </div>
+            <button type="submit">Send Message</button>
+        </form>
+        <p id="successMessage" class="success-message">Thank you for your message! We'll get back to you soon.</p>
+    </section>
+
+    <section class="reviews-section">
+        <h2>Reviews</h2>
+        <div id="reviewsContainer"></div>
+    </section>
+
+    <script>
+        // Handle star rating
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.getAttribute('data-value');
+                ratingInput.value = value;
+                stars.forEach(s => {
+                    s.classList.remove('selected');
+                    if (s.getAttribute('data-value') <= value) {
+                        s.classList.add('selected');
+                    }
+                });
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if rating is selected
+            if (!ratingInput.value) {
+                alert('Please select a rating.');
+                return;
+            }
+
+            // Get form values
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                rating: parseInt(ratingInput.value),
+                message: document.getElementById('message').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get existing reviews from localStorage or initialize empty array
+            let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            
+            // Add new review
+            reviews.push(formData);
+            
+            // Save to localStorage
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+            
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            // Clear form and stars
+            this.reset();
+            stars.forEach(s => s.classList.remove('selected'));
+            ratingInput.value = '';
+            
+            // Update reviews display
+            displayReviews();
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        });
+
+        // Function to display reviews
+        function displayReviews() {
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            
+            // Clear existing reviews
+            reviewsContainer.innerHTML = '';
+            
+            // Display each review
+            reviews.forEach((review, index) => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+                reviewCard.style.animationDelay = `${index * 0.1}s`;
+                reviewCard.innerHTML = `
+                    <h3>${review.fullName}</h3>
+                    <p class="email">${review.email}</p>
+                    <p class="rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</p>
+                    <p>${review.message}</p>
+                    <p><small>Submitted: ${new Date(review.timestamp).toLocaleString()}</small></p>
+                `;
+                reviewsContainer.appendChild(reviewCard);
+            });
+        }
+
+        // Display reviews on page load
+        displayReviews();
+    </script>
+</body>
+</html>
